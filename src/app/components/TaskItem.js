@@ -1,8 +1,7 @@
-// src/app/components/TaskItem.js
 import React from 'react';
-import { CheckCircle, Circle } from 'lucide-react';
+import { CheckCircle, Circle,Star } from 'lucide-react';
 
-const TaskItem = ({ title, isCompleted, onToggleComplete, children }) => {
+const TaskItem = ({ text, isCompleted, onToggleComplete ,isImportant}) => {
   return (
     <li
       className={`flex items-center justify-between p-2 rounded hover:bg-gray-50 cursor-pointer ${
@@ -16,10 +15,10 @@ const TaskItem = ({ title, isCompleted, onToggleComplete, children }) => {
         ) : (
           <Circle className="text-gray-400 mr-2" />
         )}
-        <span>{title}</span>
+        <span>{text}</span> 
       </div>
-      <div className="flex space-x-2">
-        {children}
+      <div className="flex items-center">
+        {isImportant && <Star className="text-yellow-500" />} 
       </div>
     </li>
   );

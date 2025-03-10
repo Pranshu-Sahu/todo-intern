@@ -1,13 +1,9 @@
-
-import TaskList from "./components/TaskList"; // Direct import from components
-import { TasksProvider } from "./contexts/TasksProvider";
+import TaskList from "./components/TaskList"; 
 
 export default function Home() {
   return (
-    <div className="border-4 border-amber-800 min-h-screen">
-      <TasksProvider>
+    <div>
       <TaskList/>
-      </TasksProvider>
     </div>
   );
 }

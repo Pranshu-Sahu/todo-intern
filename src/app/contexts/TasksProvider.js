@@ -1,37 +1,64 @@
-"use client"
-import React, { useState } from 'react';
-import TasksContext from './TasksContext';
-import { v4 as uuidv4 } from "uuid";
-
+"use client";
+import { useEffect, useState } from "react";
+import TasksContext from "./TasksContext";
 
 const TasksProvider = ({ children }) => {
-    const [tasks, setTasks] = useState([
-        { id: uuidv4(), title: "Buy groceries", completed: false },
-        { id: uuidv4(), title: "Finish project report", completed: false },
-        { id: uuidv4(), title: "Call the bank", completed: true },
-      ]);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-      const toggleTask = (id) => {
-          setTasks((prev) =>
-            prev.map((task) =>
-              task.id === id ? { ...task, completed: !task.completed } : task
-            )
+  useEffect(() => {
+    async function fetchTasks() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/tasks");
+        if (!response.ok) {
+          throw new Error(
+            `HTTP error! status: ${response.status} ${response.statusText}`
           );
-        };
+        }
+        const taskData = await response.json();
+        setTasks(taskData.tasks);
+        console.log(
+          "TasksProvider -value of state tasks after setting:",
+          taskData.tasks
+        );
+      } catch (e) {
+        setError(e);
+        console.error("Error fetching tasks:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTasks();
+    console.log(tasks);
+  }, []);
 
-    const addTask = (task) => {
-        setTasks([...tasks, task]);
-    };
-
-    const removeTask = (taskId) => {
-        setTasks(tasks.filter(task => task.id !== taskId));
-    };
-
-    return (
-        <TasksContext.Provider value={{ tasks, addTask, removeTask,toggleTask }}>
-            {children}
-        </TasksContext.Provider>
+  const toggleTask = async (_id) => {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Short delay, 0.5 seconds
+    setTasks((prev) =>
+      prev.map((task) =>
+        task._id === _id ? { ...task, completed: !task.completed } : task
+      )
     );
+  };
+
+  const addTask = (task) => {
+    setTasks([...tasks, task]);
+  };
+
+  const removeTask = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
+  };
+
+  const contextValue = { tasks, addTask, removeTask, toggleTask };
+  return (
+    <TasksContext.Provider value={contextValue}>
+      {children}
+    </TasksContext.Provider>
+  );
 };
 
 export { TasksProvider, TasksContext };
